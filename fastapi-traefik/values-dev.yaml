@@ -1,0 +1,20 @@
+namespace: dev
+
+web:
+  repository: icedrus/web-dev
+  tag: latest
+
+data:
+  tag: latest
+
+nginx:
+  tag: latest
+
+ingress:
+  host: dev.localhost
+
+role:
+  name: traefik-role-dev
+
+roleBinding:
+  name: traefik-role-binding-dev

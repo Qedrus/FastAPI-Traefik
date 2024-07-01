@@ -1,0 +1,22 @@
+namespace: prod
+
+web:
+  repository: icedrus/web-prod
+  tag: latest
+  command:
+  args:
+
+data:
+  tag: latest
+
+nginx:
+  tag: latest
+
+ingress:
+  host: prod.localhost
+
+role:
+  name: traefik-role-prod
+
+roleBinding:
+  name: traefik-role-binding-prod

@@ -1,0 +1,149 @@
+# Default values for fastapi-traefik.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespace: ""
+
+web:
+  replicaCount: 1
+  repository: icedrus/web-dev
+  tag: latest
+  command: ["bash", "-c"]
+  args: ["uvicorn app.main:app --host 0.0.0.0"]
+  containerPort: 8000
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+  config:
+    script_name: /api/admin
+  hpa:
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 70
+
+db:
+  replicaCount: 1
+  repository: postgres
+  tag: 15-alpine
+  service:
+    type: ClusterIP
+  storage:
+    capacity: 10Gi
+  config:
+    db_name: fastapi_traefik
+  credentials:
+    secret_file: db-secret
+
+
+traefik:
+  replicaCount: 1
+  image:
+    repository: traefik
+    tag: v2.9.6
+    pullPolicy: IfNotPresent
+  serviceAccountName: traefik-service-account
+  args:
+    - "--log.level=DEBUG"
+    - "--accesslog=true"
+    # - "--api.insecure=true"
+    - "--api.dashboard=true"
+    - "--providers.kubernetescrd=true"
+    - "--entrypoints.web.Address=:80"
+    - "--entrypoints.websecure.Address=:443"
+    # Pour HTTPS
+    - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+    - "--certificatesresolvers.letsencrypt.acme.email=josmartosmol@gmail.com"
+    - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
+  ports:
+    web:
+      containerPort: 80
+    websecure:
+      containerPort: 443
+    dashboard:
+      containerPort: 8080
+
+role:
+  name: traefik-role
+  rules:
+    - apiGroups:
+        - ""
+      resources:
+        - services
+        - endpoints
+        - secrets
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - extensions
+        - networking.k8s.io
+      resources:
+        - ingresses
+        - ingressclasses
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - extensions
+        - networking.k8s.io
+      resources:
+        - ingresses/status
+      verbs:
+        - update
+    - apiGroups:
+        - traefik.containo.us
+      resources:
+        - middlewares
+        - ingressroutes
+        - tlsstores
+        - tlsOptions
+        - ingressroutetcps
+        - ingressrouteudps
+        - serverstransports
+        - traefikservices
+        - middlewaretcps
+        - tlsoptions
+      verbs:
+        - get
+        - list
+        - watch
+
+serviceAccount:
+  name: traefik-service-account
+
+roleBinding:
+  name: traefik-role-binding
+
+dashboardService:
+  name: traefik-dashboard-service
+  type: LoadBalancer
+  port: 8080
+  targetPort: 8080
+
+webService:
+  name: traefik-web-service
+  type: LoadBalancer
+  port: 80
+  targetPort: 80
+
+webSecureService:
+  name: traefik-websecure-service
+  type: LoadBalancer
+  port: 443
+  targetPort: 443
+
+ingress:
+  host: # a definir
+
+secrets:
+  web:
+    secret_key: ""
+  pgadmin:
+    email: ""
+    password: ""
+  db:
+    user: ""
+    password: ""
