@@ -4,7 +4,7 @@ namespace: ""
 
 web:
   replicaCount: 1
-  repository: icedrus/wev-dev
+  repository: icedrus/web-dev
   tag: latest
   command: ["bash", "-c"]
   args: ["uvicorn app.main:app --host 0.0.0.0"]

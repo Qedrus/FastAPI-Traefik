@@ -1,7 +1,7 @@
 namespace: dev
 
 web:
-  repository: icedrus/wev-dev
+  repository: icedrus/web-dev
   tag: latest
 
 data:
