@@ -1,18 +1,18 @@
 # Ce StatefulSet déploie une instance unique de la base de données PostgreSQL en utilisant l'image postgres:15-alpine.
-apiVersion: apps/v1            
-kind: StatefulSet              
+apiVersion: apps/v1
+kind: StatefulSet
 metadata:
-  name: db-statefulset         
+  name: db-statefulset
 spec:
   selector:
     matchLabels:
-      app: db                  
+      app: db
   serviceName: db-service      # Nom du service utilisé pour accéder aux pods du StatefulSet
   replicas: {{ .Values.db.replicaCount }}                 # Nombre de répliques à déployer
   template:
     metadata:
       labels:
-        app: db                
+        app: db
     spec:
       containers:
       - name: db
@@ -25,9 +25,13 @@ spec:
         ports:
         - containerPort: 5432
         volumeMounts:
-        - name: postgres-data   
+        - name: postgres-data
           mountPath: /var/lib/postgresql/data  # Chemin de montage dans le conteneur
-      volumes:
-      - name: postgres-data     
-        persistentVolumeClaim:
-          claimName: db-pvc     # Référence à la réclamation de volume persistant (PVC)
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.db.storage.capacity }}
