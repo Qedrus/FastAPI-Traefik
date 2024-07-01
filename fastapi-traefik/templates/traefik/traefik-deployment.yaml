@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik-deployment
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web, websecure
+spec:
+  selector:
+    matchLabels:
+      app: traefik
+  replicas: {{ .Values.traefik.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      containers:
+        - name: traefik
+          image: "{{ .Values.traefik.image.repository }}:{{ .Values.traefik.image.tag }}"
+          imagePullPolicy: {{ .Values.traefik.image.pullPolicy }}
+          args: {{ .Values.traefik.args | toYaml | nindent 12 }}
+          ports:
+            - name: web
+              containerPort: {{ .Values.traefik.ports.web.containerPort }}
+            - name: websecure
+              containerPort: {{ .Values.traefik.ports.websecure.containerPort }}
+            - name: dashboard
+              containerPort: {{ .Values.traefik.ports.dashboard.containerPort }}
+      # Pour HTTPS
+      volumes:
+        - name: acme-storage
+          emptyDir: {}
+      volumeMounts:
+        - name: acme-storage
+          mountPath: "/acme.json"
+          readOnly: false

@@ -1,0 +1,12 @@
+# Ce fichier YAML définit une réclamation de volume persistant (PVC) nommée "db-pvc"
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-pvc                       
+spec:
+  accessModes:
+    - ReadWriteOnce                    # Mode d'accès au volume persistant
+  storageClassName: local-path         # Classe de stockage utilisée (à voir si modification requise)
+  resources:
+    requests:
+      storage: {{ .Values.db.storage.capacity }}                    # Capacité de stockage demandée pour le volume

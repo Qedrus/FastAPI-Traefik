@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-deployment
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: "{{ .Values.web.repository }}:{{ .Values.web.tag }}"
+          ports:
+            - containerPort: {{ .Values.web.containerPort }}
+          command: {{ .Values.web.command }}
+          args: {{ .Values.web.args }}

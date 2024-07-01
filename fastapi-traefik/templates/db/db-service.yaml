@@ -1,0 +1,15 @@
+# Ce Service expose la base de données PostgreSQL sur le port 5432 à l'intérieur du cluster Kubernetes.
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-service
+spec:
+  selector:
+    app: db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+      nodePort: {{ .Values.db.service.nodePort }}
+  type:  "{{ .Values.db.service.type }}"
+

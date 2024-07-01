@@ -1,6 +1,4 @@
-# Default values for fastapi-traefik.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+#nodeport pour minikube
 
 namespace: ""
 
@@ -11,10 +9,15 @@ web:
   command: ["bash", "-c"]
   args: ["uvicorn app.main:app --host 0.0.0.0"]
   containerPort: 8000
+  #service:
+    #type: ClusterIP
+    #port: 8000
+    #targetPort: 8000
   service:
-    type: ClusterIP
+    type: NodePort
     port: 8000
     targetPort: 8000
+    nodePort: 30080
   config:
     script_name: /api/admin
   hpa:
@@ -27,7 +30,11 @@ db:
   repository: postgres
   tag: 15-alpine
   service:
-    type: ClusterIP
+    #type: ClusterIP
+    type: NodePort
+    port: 5432
+    targetPort: 5432
+    nodePort: 30082
   storage:
     capacity: 10Gi
   config:
@@ -58,10 +65,14 @@ traefik:
   ports:
     web:
       containerPort: 80
+      nodePort: 30080
     websecure:
       containerPort: 443
+      nodePort: 30443
     dashboard:
       containerPort: 8080
+      nodePort: 30081
+
 
 role:
   name: traefik-role
@@ -119,21 +130,34 @@ roleBinding:
 
 dashboardService:
   name: traefik-dashboard-service
-  type: LoadBalancer
+  #type: LoadBalancer
+  #port: 8080
+  #targetPort: 8080
+  type: NodePort
   port: 8080
   targetPort: 8080
+  nodePort: 30081
 
 webService:
   name: traefik-web-service
-  type: LoadBalancer
+  #type: LoadBalancer
+  #port: 80
+  #targetPort: 80
+  type: NodePort
   port: 80
   targetPort: 80
+  nodePort: 30080
 
 webSecureService:
   name: traefik-websecure-service
-  type: LoadBalancer
+  #type: LoadBalancer
+  #port: 443
+  #targetPort: 443
+  type: NodePort
   port: 443
   targetPort: 443
+  nodePort: 30443
+
 
 ingress:
   host: # a definir

@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.dashboardService.name }}
+spec:
+  type: {{ .Values.dashboardService.type }}
+  ports:
+    - port: {{ .Values.dashboardService.port }}
+      targetPort: {{ .Values.dashboardService.targetPort }}
+      nodePort: {{ .Values.dashboardService.nodePort }}
+  selector:
+    app: traefik
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.webService.name }}
+spec:
+  type: {{ .Values.webService.type }}
+  ports:
+    - port: {{ .Values.webService.port }}
+      targetPort: {{ .Values.webService.targetPort }}
+      nodePort: {{ .Values.webService.nodePort }}
+  selector:
+    app: traefik
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.webSecureService.name }}
+spec:
+  type: {{ .Values.webSecureService.type }}
+  ports:
+    - port: {{ .Values.webSecureService.port }}
+      targetPort: {{ .Values.webSecureService.targetPort }}
+      nodePort: {{ .Values.webSecureService.nodePort }}
+  selector:
+    app: traefik

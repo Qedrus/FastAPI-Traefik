@@ -1,0 +1,7 @@
+# Ce ConfigMap définit les paramètres de configuration de la base de données PostgreSQL utilisée par FastAPI avec Traefik.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-configmap
+data:
+  POSTGRES_DB: "{{ .Values.db.config.db_name }}"
