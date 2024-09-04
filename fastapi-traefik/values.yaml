@@ -1,5 +1,3 @@
-#nodeport pour minikube
-
 namespace: ""
 
 web:
@@ -9,15 +7,10 @@ web:
   command: ["bash", "-c"]
   args: ["uvicorn app.main:app --host 0.0.0.0"]
   containerPort: 8000
-  #service:
-    #type: ClusterIP
-    #port: 8000
-    #targetPort: 8000
   service:
-    type: NodePort
+    type: ClusterIP
     port: 8000
     targetPort: 8000
-    nodePort: 30081
   config:
     script_name: /api/admin
   hpa:
@@ -30,11 +23,9 @@ db:
   repository: postgres
   tag: 15-alpine
   service:
-    #type: ClusterIP
-    type: NodePort
+    type: ClusterIP
     port: 5432
     targetPort: 5432
-    nodePort: 30082
   storage:
     capacity: 10Gi
   config:
@@ -64,15 +55,12 @@ traefik:
     - "--certificatesresolvers.letsencrypt.acme.storage=/acme.json"
   ports:
     web:
-      containerPort: 80
-      nodePort: 30083
+      containerPort: 80   
     websecure:
       containerPort: 443
-      nodePort: 30444
     dashboard:
       containerPort: 8080
-      nodePort: 30084
-
+      
 
 role:
   name: traefik-role
@@ -130,33 +118,21 @@ roleBinding:
 
 dashboardService:
   name: traefik-dashboard-service
-  #type: LoadBalancer
-  #port: 8080
-  #targetPort: 8080
-  type: NodePort
+  type: LoadBalancer
   port: 8080
   targetPort: 8080
-  nodePort: 30085
 
 webService:
   name: traefik-web-service
-  #type: LoadBalancer
-  #port: 80
-  #targetPort: 80
-  type: NodePort
+  type: LoadBalancer
   port: 80
   targetPort: 80
-  nodePort: 30086
 
 webSecureService:
   name: traefik-websecure-service
-  #type: LoadBalancer
-  #port: 443
-  #targetPort: 443
-  type: NodePort
+  type: LoadBalancer
   port: 443
   targetPort: 443
-  nodePort: 30446
 
 
 ingress:
